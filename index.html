@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Les petits plats 👨‍🍳</title>
+    <!-- link to normalize css style -->
+    <link href="./css/normalize.css" rel="stylesheet" />
+    <!-- link to css file -->
+    <link href="./css/style.css" rel="stylesheet" />
+    <!-- font awesome -->
+    <link
+      rel="stylesheet"
+      href="https://use.fontawesome.com/releases/v6.1.1/css/all.css"
+      integrity="sha384-/frq1SRXYH/bSyou/HUp/hib7RVN1TawQYja658FEOodR/FQBKVqT9Ol+Oz3Olq5"
+      crossorigin="anonymous"
+    />
+    <!-- google font -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Roboto&display=swap"
+      rel="stylesheet"
+    />
+    <!-- js file -->
+    <script src="./scripts/main.js" type="module"></script>
+  </head>
+
+  <body>
+    <header>
+      <img src="./image/logo.png" />
+    </header>
+
+    <main>
+      <section class="search_nav">
+        <div class="search_nav-container">
+          <form action="/" method="post" class="search_nav-form">
+            <input
+              type="text"
+              class="search_nav-input"
+              placeholder="Rechercher une recette"
+            />
+          </form>
+          <i class="fa-solid fa-magnifying-glass"></i>
+        </div>
+      </section>
+      <section class="filters">
+        <div class="filters-container">
+          <button class="filter-btn blue-clr">
+            <span class="filter-name">Ingredients</span>
+            <i class="fa-solid fa-angle-down"></i>
+          </button>
+          <div class="ingredients-form-container remove">
+            <div class="ingredients-form">
+              <form action="/" method="post" class="search_ingredients-form">
+                <input
+                  type="text"
+                  class="search_ingredients-input"
+                  placeholder="Rechercher un ingrédient"
+                />
+              </form>
+              <i class="fa-solid fa-angle-up"></i>
+            </div>
+            <ul class="ingredients-menu"></ul>
+          </div>
+
+          <button class="filter-btn green-clr">
+            <span class="filter-name">Appareils</span>
+            <i class="fa-solid fa-angle-down"></i>
+          </button>
+
+          <div class="appliances-form-container remove">
+            <div class="appliances-form">
+              <form action="/" method="post" class="search_appliances-form">
+                <input
+                  type="text"
+                  class="search_appliances-input"
+                  placeholder="Rechercher un appareil"
+                />
+              </form>
+              <i class="fa-solid fa-angle-up"></i>
+            </div>
+            <ul class="appliances-menu"></ul>
+          </div>
+
+          <button class="filter-btn red-clr">
+            <span class="filter-name">Ustensiles</span>
+            <i class="fa-solid fa-angle-down"></i>
+          </button>
+
+          <div class="utensils-form-container remove">
+            <div class="utensils-form">
+              <form action="/" method="post" class="search_utensils-form">
+                <input
+                  type="text"
+                  class="search_utensils-input"
+                  placeholder="Rechercher un ustensile"
+                />
+              </form>
+              <i class="fa-solid fa-angle-up"></i>
+            </div>
+            <ul class="utensils-menu"></ul>
+          </div>
+        </div>
+      </section>
+      <section class="recipes">
+        <div class="recipes-wrapper"></div>
+      </section>
+    </main>
+  </body>
+</html>
