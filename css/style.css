@@ -355,7 +355,6 @@ button.filter-btn {
   padding: 10px 20px;
   border-radius: 5px;
   color: #fff;
-  cursor: pointer;
 }
 
 .tag-container .tag p {
@@ -368,6 +367,7 @@ button.filter-btn {
 
 .tag-container .tag i {
   font-size: 20px;
+  cursor: pointer;
 }
 
 .tag-container .tag.ingredient {

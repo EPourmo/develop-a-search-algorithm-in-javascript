@@ -1,6 +1,6 @@
 import recipes from "./data/recipes.js";
 import RecipeCard from "./templates/RecipeCard.js";
-import Filters from "./utils/filters.js";
+import Filters from "./utils/Filters.js";
 import FilterSearchBar from "./utils/FilterSearchBar.js";
 import Tags from "./templates/Tags.js";
 
@@ -95,55 +95,28 @@ const createFilterList = (array, appendElement, name) => {
 };
 
 const createIngredientList = (array, appendElement, name) => {
+  // console.log("hello");
   ingredientsMenu.innerHTML = "";
 
   array.forEach((item) => {
-    const listElement = document.createElement("li");
-    listElement.setAttribute("class", `list-element ${name}`);
-    listElement.textContent = item;
-    appendElement.appendChild(listElement);
-  });
+    const ingredient = document.createElement("li");
+    ingredient.setAttribute("class", `list-element ${name}`);
+    ingredient.textContent = item;
+    appendElement.appendChild(ingredient);
 
-  setIngredientList();
-};
-
-// function to remove recipes card and menu lists
-const removePage = () => {
-  recipeWrapper.innerHTML = "";
-  ingredientsMenu.innerHTML = "";
-  appliancesMenu.innerHTML = "";
-  utensilsMenu.innerHTML = "";
-};
-
-// generate recipes card and menu lists from input (array)
-const generatePage = (recipes) => {
-  getRecipesCard(recipes);
-  const { uniqueIngredients, uniqueApplicances, uniqueUtensils } =
-    getFilters(recipes);
-  createIngredientList(uniqueIngredients, ingredientsMenu, "ingredient-item");
-  createFilterList(uniqueApplicances, appliancesMenu, "appliance-item");
-  createFilterList(uniqueUtensils, utensilsMenu, "utensil-item");
-};
-
-let removedIngredients = [];
-let currentRecipesData = recipesArray;
-let ingredientTagList = [];
-
-// even listener on ingredient list and create tags
-const setIngredientList = () => {
-  let currentIngredientList = document.querySelectorAll(
-    ".list-element.ingredient-item"
-  );
-  currentIngredientList.forEach((ingredient) => {
     ingredient.addEventListener("click", () => {
       // get selected inner HTML ingredient from list
       let tagValue = ingredient.innerHTML.toLocaleLowerCase();
       removedIngredients.push(tagValue);
       // create tag
       const tag = new Tags(tagValue, "ingredient");
-      tagContainer.appendChild(tag.createTag());
+      const htmlTag = tag.createTag();
+      tagContainer.appendChild(htmlTag);
+      removeTag(htmlTag);
 
-      ingredientTagList = document.querySelectorAll(".tag.ingredient");
+      // get all generated tags
+      // ingredientTagList = document.querySelectorAll(".tag.ingredient");
+      // console.log(ingredientTagList);
 
       // create new recipes array data filtered
       let newData;
@@ -177,18 +150,58 @@ const setIngredientList = () => {
       // close menu list
       ingredientBtn.classList.remove("remove");
       ingredientForm.classList.add("remove");
-
-      ingredientTagList.forEach((tag) => {
-        let newDataClose;
-        tag.addEventListener("click", () => {
-          let deletedTagValue = tag.children[0].innerHTML;
-          console.log(deletedTagValue);
-          let newDataClose = removedIngredients.filter(
-            (item) => item !== deletedTagValue
-          );
-        });
-      });
     });
+  });
+};
+
+// function to remove recipes card and menu lists
+const removePage = () => {
+  recipeWrapper.innerHTML = "";
+  ingredientsMenu.innerHTML = "";
+  appliancesMenu.innerHTML = "";
+  utensilsMenu.innerHTML = "";
+};
+
+// generate recipes card and menu lists from input (array)
+const generatePage = (recipes) => {
+  getRecipesCard(recipes);
+  const { uniqueIngredients, uniqueApplicances, uniqueUtensils } =
+    getFilters(recipes);
+  createIngredientList(uniqueIngredients, ingredientsMenu, "ingredient-item");
+  createFilterList(uniqueApplicances, appliancesMenu, "appliance-item");
+  createFilterList(uniqueUtensils, utensilsMenu, "utensil-item");
+};
+
+let currentRecipesData = recipesArray;
+let removedIngredients = [];
+let ingredientTagList = [];
+let currentIngredientList;
+
+// even listener on ingredient list and create tags
+// const setIngredientList = () => {
+//   currentIngredientList = document.querySelectorAll(
+//     ".list-element.ingredient-item"
+//   );
+//   currentIngredientList.forEach((ingredient) => {});
+// };
+
+const removeTag = (tag) => {
+  tag.querySelector("i").addEventListener("click", () => {
+    // deletedTagValue.push(tag.children[0].innerHTML);
+    console.log("clicked");
+
+    // let newDataClose = removedIngredients.filter(
+    //   (item) => item !== deletedTagValue
+    // );
+    // console.log(newDataClose);
+
+    // let newIngredientTagList = ingredientTagList.filter(
+    //   (item) => item.children[0].innerHTML !== deletedTagValue
+    // );
+
+    // ingredientTagList = newIngredientTagList;
+    // removedIngredients = newDataClose;
+    // console.log(removedIngredients);
   });
 };
 
@@ -217,12 +230,14 @@ const init = () => {
       let remainIngredients = filteredIngredients.filter(
         (element) => !removedIngredients.includes(element)
       );
+      ingredientsMenu.innerHTML = "";
       createIngredientList(
         remainIngredients,
         ingredientsMenu,
         "ingredient-item"
       );
     } else {
+      ingredientsMenu.innerHTML = "";
       createIngredientList(
         filteredIngredients,
         ingredientsMenu,
