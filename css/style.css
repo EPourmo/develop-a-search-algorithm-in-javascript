@@ -338,6 +338,12 @@ button.filter-btn {
   gap: 50px;
 }
 
+/*--------Message--------*/
+.no-fund-message {
+  margin: 0;
+  font-weight: 700;
+}
+
 /*--------Tags Card--------*/
 .tag-container {
   width: 100%;
