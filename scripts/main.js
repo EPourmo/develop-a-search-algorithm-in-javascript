@@ -84,6 +84,10 @@ eventListenerFiltersMenu(ingredientBtn, ingredientForm, angleUpCloseIngredient);
 eventListenerFiltersMenu(applianceBtn, applianceForm, angleUpCloseAppliance);
 eventListenerFiltersMenu(utensilBtn, utensilForm, angleUpCloseUtensils);
 
+let filteredDataSB;
+let currentRecipesData = recipesArray;
+let removedIngredients = [];
+
 // function to generate menu from filters
 const createFilterList = (array, appendElement, name) => {
   array.forEach((item) => {
@@ -95,15 +99,14 @@ const createFilterList = (array, appendElement, name) => {
 };
 
 const createIngredientList = (array, appendElement, name) => {
-  // console.log("hello");
   ingredientsMenu.innerHTML = "";
-
+  // create ingredients list item
   array.forEach((item) => {
     const ingredient = document.createElement("li");
     ingredient.setAttribute("class", `list-element ${name}`);
     ingredient.textContent = item;
     appendElement.appendChild(ingredient);
-
+    // event listener from each ingredient
     ingredient.addEventListener("click", () => {
       // get selected inner HTML ingredient from list
       let tagValue = ingredient.innerHTML.toLocaleLowerCase();
@@ -112,12 +115,8 @@ const createIngredientList = (array, appendElement, name) => {
       const tag = new Tags(tagValue, "ingredient");
       const htmlTag = tag.createTag();
       tagContainer.appendChild(htmlTag);
+      // function to remove tag
       removeTag(htmlTag);
-
-      // get all generated tags
-      // ingredientTagList = document.querySelectorAll(".tag.ingredient");
-      // console.log(ingredientTagList);
-
       // create new recipes array data filtered
       let newData;
       removedIngredients.forEach((element) => {
@@ -172,36 +171,50 @@ const generatePage = (recipes) => {
   createFilterList(uniqueUtensils, utensilsMenu, "utensil-item");
 };
 
-let currentRecipesData = recipesArray;
-let removedIngredients = [];
-let ingredientTagList = [];
-let currentIngredientList;
-
-// even listener on ingredient list and create tags
-// const setIngredientList = () => {
-//   currentIngredientList = document.querySelectorAll(
-//     ".list-element.ingredient-item"
-//   );
-//   currentIngredientList.forEach((ingredient) => {});
-// };
-
 const removeTag = (tag) => {
   tag.querySelector("i").addEventListener("click", () => {
-    // deletedTagValue.push(tag.children[0].innerHTML);
-    console.log("clicked");
+    let putBackIngredients = removedIngredients.filter(
+      (item) => !tag.querySelector("p").innerHTML.includes(item)
+    );
+    tag.remove();
+    removedIngredients = putBackIngredients;
+    let newArrayData;
 
-    // let newDataClose = removedIngredients.filter(
-    //   (item) => item !== deletedTagValue
-    // );
-    // console.log(newDataClose);
+    filteredDataSB
+      ? (newArrayData = filteredDataSB)
+      : (newArrayData = recipesArray);
 
-    // let newIngredientTagList = ingredientTagList.filter(
-    //   (item) => item.children[0].innerHTML !== deletedTagValue
-    // );
+    if (removedIngredients.length > 0) {
+      removedIngredients.forEach((element) => {
+        newArrayData = newArrayData.filter((recipe) => {
+          return recipe.ingredients.some((ingre) =>
+            ingre.ingredient.toLowerCase().includes(element)
+          );
+        });
+      });
+    } else {
+      filteredDataSB
+        ? (newArrayData = filteredDataSB)
+        : (newArrayData = recipesArray);
+    }
+    // create page elements
+    removePage();
+    // generate single ingredient array
+    getRecipesCard(newArrayData);
 
-    // ingredientTagList = newIngredientTagList;
-    // removedIngredients = newDataClose;
-    // console.log(removedIngredients);
+    const { uniqueIngredients, uniqueApplicances, uniqueUtensils } =
+      getFilters(newArrayData);
+    // remove tags from ingredient list
+    let removeIngredientFromList = uniqueIngredients.filter(
+      (element) => !removedIngredients.includes(element)
+    );
+    // create ingredient menu list
+    createIngredientList(
+      removeIngredientFromList,
+      ingredientsMenu,
+      "ingredient-item"
+    );
+    currentRecipesData = newArrayData;
   });
 };
 
@@ -210,12 +223,19 @@ const init = () => {
   serachBarInput.addEventListener("input", (e) => {
     removePage();
     const inputValue = e.target.value.toLowerCase();
-    let filteredDataSB = new FilterSearchBar(
+    filteredDataSB = new FilterSearchBar(
       recipesArray,
       inputValue
     ).mainFilterRecipes();
-    generatePage(filteredDataSB);
-    currentRecipesData = filteredDataSB;
+    if (filteredDataSB.length == 0) {
+      recipeWrapper.innerHTML = `<p class="no-fund-message">
+      Aucune recette ne correspond à votre critère… vous pouvez chercher «
+      tarte aux pommes », « poisson », etc.
+    </p>`;
+    } else {
+      generatePage(filteredDataSB);
+      currentRecipesData = filteredDataSB;
+    }
   });
 
   searchIngredientsInput.addEventListener("input", (e) => {
