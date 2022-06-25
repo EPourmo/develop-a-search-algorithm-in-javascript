@@ -139,8 +139,7 @@ const createElementList = (array, appendElement, name, removedElement) => {
           });
         });
       }
-
-      // remove tag action
+      // remove tag actions
       removeTag(htmlTag, name);
       // create page elements
       removePage();
@@ -148,43 +147,18 @@ const createElementList = (array, appendElement, name, removedElement) => {
       getRecipesCard(newData);
       const { uniqueIngredients, uniqueApplicances, uniqueUtensils } =
         getFilters(newData);
-      // remove tags from ingredient list
-      let removeIngredientFromList = uniqueIngredients.filter(
-        (element) => !removedIngredients.includes(element)
-      );
-      // remove tags from ingredient list
-      let removeApplianceFromList = uniqueApplicances.filter(
-        (element) => !removedAppliances.includes(element)
-      );
-      // remove tags from ingredient list
-      let removeUtensilFromList = uniqueUtensils.filter(
-        (element) => !removedUtensils.includes(element)
-      );
 
-      // create ingredient menu list
-      createElementList(
-        removeIngredientFromList,
-        ingredientsMenu,
-        "ingredient-item",
-        removedIngredients
-      );
-      // create appliance menu list
-      createElementList(
-        removeApplianceFromList,
-        appliancesMenu,
-        "appliance-item",
-        removedAppliances
-      );
-      createElementList(
-        removeUtensilFromList,
-        utensilsMenu,
-        "utensil-item",
-        removedUtensils
+      removeElementFromMenuList(
+        uniqueIngredients,
+        uniqueApplicances,
+        uniqueUtensils
       );
       // assign new recipes array (filtered)
       currentRecipesData = newData;
       // remove input value
       searchIngredientsInput.value = "";
+      searchAppliancesInput.value = "";
+      searchUtensilsInput.value = "";
       // close menu list
       closeMenuFilters();
     });
@@ -204,23 +178,10 @@ const generatePage = (recipes) => {
   getRecipesCard(recipes);
   const { uniqueIngredients, uniqueApplicances, uniqueUtensils } =
     getFilters(recipes);
-  createElementList(
+  removeElementFromMenuList(
     uniqueIngredients,
-    ingredientsMenu,
-    "ingredient-item",
-    removedIngredients
-  );
-  createElementList(
     uniqueApplicances,
-    appliancesMenu,
-    "appliance-item",
-    removedAppliances
-  );
-  createElementList(
-    uniqueUtensils,
-    utensilsMenu,
-    "utensil-item",
-    removedUtensils
+    uniqueUtensils
   );
 };
 
@@ -267,37 +228,15 @@ const removeTag = (tag, name) => {
 
     const { uniqueIngredients, uniqueApplicances, uniqueUtensils } =
       getFilters(currentRecipesData);
-    // remove tags from ingredient list
-    let removeIngredientFromList = uniqueIngredients.filter(
-      (element) => !removedIngredients.includes(element)
+
+    removeElementFromMenuList(
+      uniqueIngredients,
+      uniqueApplicances,
+      uniqueUtensils
     );
-    // remove tags from ingredient list
-    let removeApplianceFromList = uniqueApplicances.filter(
-      (element) => !removedAppliances.includes(element)
-    );
-    // remove tags from ingredient list
-    let removeUtensilFromList = uniqueUtensils.filter(
-      (element) => !removedUtensils.includes(element)
-    );
-    // create ingredient menu list
-    createElementList(
-      removeIngredientFromList,
-      ingredientsMenu,
-      "ingredient-item",
-      removedIngredients
-    );
-    createElementList(
-      removeApplianceFromList,
-      appliancesMenu,
-      "appliance-item",
-      removedAppliances
-    );
-    createElementList(
-      removeUtensilFromList,
-      utensilsMenu,
-      "utensil-item",
-      removedUtensils
-    );
+
+    // close menu list
+    closeMenuFilters();
   });
 };
 
@@ -341,6 +280,72 @@ const recipesArrayFilter = (array) => {
   return array;
 };
 
+const removeElementFromMenuList = (ingredient, appliance, utensil) => {
+  // remove tags from ingredient list
+  let removeIngredientFromList = ingredient.filter(
+    (element) => !removedIngredients.includes(element)
+  );
+  // remove tags from ingredient list
+  let removeApplianceFromList = appliance.filter(
+    (element) => !removedAppliances.includes(element)
+  );
+  // remove tags from ingredient list
+  let removeUtensilFromList = utensil.filter(
+    (element) => !removedUtensils.includes(element)
+  );
+  // create ingredient menu list
+  createElementList(
+    removeIngredientFromList,
+    ingredientsMenu,
+    "ingredient-item",
+    removedIngredients
+  );
+  createElementList(
+    removeApplianceFromList,
+    appliancesMenu,
+    "appliance-item",
+    removedAppliances
+  );
+  createElementList(
+    removeUtensilFromList,
+    utensilsMenu,
+    "utensil-item",
+    removedUtensils
+  );
+};
+
+const inputEvenListener = (htmlInput, removedArray, htmlMenu, inputName) => {
+  htmlInput.addEventListener("input", (e) => {
+    let inputValue = e.target.value.toLowerCase();
+    // display filtered data on ingredient search form
+    const { uniqueIngredients, uniqueApplicances, uniqueUtensils } =
+      getFilters(currentRecipesData);
+    let filteredElement;
+    if (inputName == "ingredient-item") {
+      filteredElement = uniqueIngredients.filter((ingredient) => {
+        return ingredient.includes(inputValue);
+      });
+    } else if (inputName == "appliance-item") {
+      filteredElement = uniqueApplicances.filter((appliance) => {
+        return appliance.includes(inputValue);
+      });
+    } else if (inputName == "utensil-item") {
+      filteredElement = uniqueUtensils.filter((utensil) => {
+        return utensil.includes(inputValue);
+      });
+    }
+
+    if (removedArray.length > 0) {
+      let remainElement = filteredElement.filter(
+        (element) => !removedArray.includes(element)
+      );
+      createElementList(remainElement, htmlMenu, inputName, removedArray);
+    } else {
+      createElementList(filteredElement, htmlMenu, inputName, removedArray);
+    }
+  });
+};
+
 const init = () => {
   generatePage(currentRecipesData);
   serachBarInput.addEventListener("input", (e) => {
@@ -366,92 +371,26 @@ const init = () => {
     tagContainer.innerHTML = "";
   });
 
-  searchIngredientsInput.addEventListener("input", (e) => {
-    let inputValue = e.target.value.toLowerCase();
-    // display filtered data on ingredient search form
-    const { uniqueIngredients, uniqueApplicances, uniqueUtensils } =
-      getFilters(currentRecipesData);
-    let filteredIngredients = uniqueIngredients.filter((ingredient) => {
-      return ingredient.includes(inputValue);
-    });
-    if (removedIngredients.length > 0) {
-      let remainIngredients = filteredIngredients.filter(
-        (element) => !removedIngredients.includes(element)
-      );
-      createElementList(
-        remainIngredients,
-        ingredientsMenu,
-        "ingredient-item",
-        removedIngredients
-      );
-    } else {
-      createElementList(
-        filteredIngredients,
-        ingredientsMenu,
-        "ingredient-item",
-        removedIngredients
-      );
-    }
-  });
+  inputEvenListener(
+    searchIngredientsInput,
+    removedIngredients,
+    ingredientsMenu,
+    "ingredient-item"
+  );
 
-  searchAppliancesInput.addEventListener("input", (e) => {
-    let inputValue = e.target.value.toLowerCase();
-    // display filtered data on ingredient search form
-    const { uniqueIngredients, uniqueApplicances, uniqueUtensils } =
-      getFilters(currentRecipesData);
-    let filteredAppliances = uniqueApplicances.filter((appliance) => {
-      return appliance.includes(inputValue);
-    });
-    if (removedAppliances.length > 0) {
-      let remainAppliance = filteredAppliances.filter(
-        (element) => !removedAppliances.includes(element)
-      );
-      createElementList(
-        remainAppliance,
-        appliancesMenu,
-        "appliance-item",
-        removedAppliances
-      );
-    } else {
-      createElementList(
-        filteredAppliances,
-        appliancesMenu,
-        "appliance-item",
-        removedAppliances
-      );
-    }
-  });
+  inputEvenListener(
+    searchAppliancesInput,
+    removedAppliances,
+    appliancesMenu,
+    "appliance-item"
+  );
 
-  searchUtensilsInput.addEventListener("input", (e) => {
-    let inputValue = e.target.value.toLowerCase();
-
-    // display filtered data on ingredient search form
-    const { uniqueIngredients, uniqueApplicances, uniqueUtensils } =
-      getFilters(currentRecipesData);
-    let filteredUtensils = uniqueUtensils.filter((utensil) => {
-      return utensil.includes(inputValue);
-    });
-
-    if (removedUtensils.length > 0) {
-      let remainUtensil = filteredUtensils.filter(
-        (element) => !removedUtensils.includes(element)
-      );
-
-      createElementList(
-        remainUtensil,
-        utensilsMenu,
-        "utensil-item",
-        removedUtensils
-      );
-    } else {
-      createElementList(
-        filteredUtensils,
-        utensilsMenu,
-        "utensil-item",
-        removedUtensils
-      );
-    }
-  });
+  inputEvenListener(
+    searchUtensilsInput,
+    removedUtensils,
+    utensilsMenu,
+    "utensil-item"
+  );
 };
 
 init();
