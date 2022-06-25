@@ -250,6 +250,9 @@ button.filter-btn {
   background: #c7bebe;
   border-radius: 5px;
   justify-content: flex-end;
+  animation: appear 0.6s ease-out;
+  animation-fill-mode: forwards;
+  z-index: -10;
 }
 
 .recipe_card .recipe_card-body {
@@ -338,6 +341,17 @@ button.filter-btn {
   gap: 50px;
 }
 
+@keyframes appear {
+  0% {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0px);
+  }
+}
+
 /*--------Message--------*/
 .no-fund-message {
   margin: 0;
@@ -361,6 +375,8 @@ button.filter-btn {
   padding: 10px 20px;
   border-radius: 5px;
   color: #fff;
+  animation: TagAppear 0.3s ease-out;
+  animation-fill-mode: forwards;
 }
 
 .tag-container .tag p {
@@ -376,6 +392,25 @@ button.filter-btn {
   cursor: pointer;
 }
 
-.tag-container .tag.ingredient {
+.tag-container .tag.ingredient-item {
   background: #3282f7;
+}
+
+.tag-container .tag.appliance-item {
+  background: #68d9a4;
+}
+
+.tag-container .tag.utensil-item {
+  background: #ed6454;
+}
+
+@keyframes TagAppear {
+  0% {
+    opacity: 0;
+    transform: rotate(0deg);
+  }
+  100% {
+    opacity: 1;
+    transform: rotate(360deg);
+  }
 }
