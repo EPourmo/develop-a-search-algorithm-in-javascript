@@ -94,18 +94,7 @@ let removedIngredients = [];
 let removedAppliances = [];
 let removedUtensils = [];
 
-// function to generate menu from filters
-const createFilterList = (array, appendElement, name) => {
-  appendElement.innerHTML = "";
-  array.forEach((item) => {
-    const listElement = document.createElement("li");
-    listElement.setAttribute("class", `list-element ${name}`);
-    listElement.textContent = item;
-    appendElement.appendChild(listElement);
-  });
-};
-
-const createElementListIngredient = (array, appendElement, name) => {
+const createElementList = (array, appendElement, name, removedElement) => {
   appendElement.innerHTML = "";
   // create elements list item
   array.forEach((item) => {
@@ -121,21 +110,38 @@ const createElementListIngredient = (array, appendElement, name) => {
       // create tag
       const tag = new Tags(tagValue, name);
       const htmlTag = tag.createTag();
-      let newData;
       tagContainer.appendChild(htmlTag);
 
-      removedIngredients.push(tagValue);
+      removedElement.push(tagValue);
       // create new recipes array data filtered
-      removedIngredients.forEach((element) => {
-        newData = currentRecipesData.filter((recipe) => {
-          return recipe.ingredients.some((ingre) =>
-            ingre.ingredient.toLowerCase().includes(element)
-          );
-        });
-      });
+      let newData;
 
-      // function to remove tag
-      removeTag(htmlTag);
+      if (name == "ingredient-item") {
+        removedElement.forEach((element) => {
+          newData = currentRecipesData.filter((recipe) => {
+            return recipe.ingredients.some((ingre) =>
+              ingre.ingredient.toLowerCase().includes(element)
+            );
+          });
+        });
+      } else if (name == "appliance-item") {
+        removedElement.forEach((element) => {
+          newData = currentRecipesData.filter((recipe) => {
+            return recipe.appliance.toLowerCase().includes(element);
+          });
+        });
+      } else if (name == "utensil-item") {
+        removedElement.forEach((element) => {
+          newData = currentRecipesData.filter((recipe) => {
+            return recipe.ustensils.some(
+              (utensil) => utensil.toLowerCase() == element
+            );
+          });
+        });
+      }
+
+      // remove tag action
+      removeTag(htmlTag, name);
       // create page elements
       removePage();
       // generate single elements array
@@ -156,21 +162,24 @@ const createElementListIngredient = (array, appendElement, name) => {
       );
 
       // create ingredient menu list
-      createElementListIngredient(
+      createElementList(
         removeIngredientFromList,
-        appendElement,
-        name
+        ingredientsMenu,
+        "ingredient-item",
+        removedIngredients
       );
       // create appliance menu list
-      createElementListAppliance(
+      createElementList(
         removeApplianceFromList,
         appliancesMenu,
-        "appliance-item"
+        "appliance-item",
+        removedAppliances
       );
-      createElementListUtensil(
+      createElementList(
         removeUtensilFromList,
         utensilsMenu,
-        "utensil-item"
+        "utensil-item",
+        removedUtensils
       );
       // assign new recipes array (filtered)
       currentRecipesData = newData;
@@ -182,147 +191,6 @@ const createElementListIngredient = (array, appendElement, name) => {
   });
 };
 
-const createElementListAppliance = (array, appendElement, name) => {
-  appendElement.innerHTML = "";
-  // create elements list item
-  array.forEach((item) => {
-    const arrayElement = document.createElement("li");
-    arrayElement.setAttribute("class", `list-element ${name}`);
-    arrayElement.textContent = item;
-    appendElement.appendChild(arrayElement);
-    // event listener from each array Element
-    arrayElement.addEventListener("click", () => {
-      // get selected inner HTML ingredient from list
-      let tagValue = arrayElement.innerHTML.toLowerCase();
-      // create tag
-      const tag = new Tags(tagValue, name);
-      const htmlTag = tag.createTag();
-      let newData;
-      tagContainer.appendChild(htmlTag);
-
-      removedAppliances.push(tagValue);
-      // function to remove tag
-      removeTagAppliance(htmlTag);
-      // create new recipes array data filtered
-      removedAppliances.forEach((element) => {
-        newData = currentRecipesData.filter((recipe) => {
-          return recipe.appliance.toLowerCase().includes(element);
-        });
-      });
-
-      // create page elements
-      removePage();
-      // generate single elements array
-      getRecipesCard(newData);
-      const { uniqueIngredients, uniqueApplicances, uniqueUtensils } =
-        getFilters(newData);
-      // remove tags from ingredient list
-      let removeIngredientFromList = uniqueIngredients.filter(
-        (element) => !removedIngredients.includes(element)
-      );
-      // remove tags from ingredient list
-      let removeApplianceFromList = uniqueApplicances.filter(
-        (element) => !removedAppliances.includes(element)
-      );
-      // remove tags from ingredient list
-      let removeUtensilFromList = uniqueUtensils.filter(
-        (element) => !removedUtensils.includes(element)
-      );
-
-      // create appliance menu list
-      createElementListAppliance(removeApplianceFromList, appendElement, name);
-      // create ingredient menu list
-      createElementListIngredient(
-        removeIngredientFromList,
-        ingredientsMenu,
-        "ingredient-item"
-      );
-      createElementListUtensil(
-        removeUtensilFromList,
-        utensilsMenu,
-        "utensil-item"
-      );
-      // assign new recipes array (filtered)
-      currentRecipesData = newData;
-      // remove input value
-      searchAppliancesInput.value = "";
-      // close menu list
-      closeMenuFilters();
-    });
-  });
-};
-
-const createElementListUtensil = (array, appendElement, name) => {
-  appendElement.innerHTML = "";
-  // create elements list item
-  array.forEach((item) => {
-    const arrayElement = document.createElement("li");
-    arrayElement.setAttribute("class", `list-element ${name}`);
-    arrayElement.textContent = item;
-    appendElement.appendChild(arrayElement);
-    // event listener from each array Element
-    arrayElement.addEventListener("click", () => {
-      // get selected inner HTML ingredient from list
-      let tagValue = arrayElement.innerHTML.toLowerCase();
-      // create tag
-      const tag = new Tags(tagValue, name);
-      const htmlTag = tag.createTag();
-      let newData;
-      tagContainer.appendChild(htmlTag);
-
-      removedUtensils.push(tagValue);
-      // function to remove tag
-      removeTagUtensil(htmlTag);
-      // create new recipes array data filtered
-      removedUtensils.forEach((element) => {
-        newData = currentRecipesData.filter((recipe) => {
-          return recipe.ustensils.some(
-            (utensil) => utensil.toLowerCase() == element
-          );
-        });
-      });
-
-      // create page elements
-      removePage();
-      // generate single elements array
-      getRecipesCard(newData);
-      const { uniqueIngredients, uniqueApplicances, uniqueUtensils } =
-        getFilters(newData);
-      // remove tags from ingredient list
-      let removeIngredientFromList = uniqueIngredients.filter(
-        (element) => !removedIngredients.includes(element)
-      );
-      // remove tags from ingredient list
-      let removeApplianceFromList = uniqueApplicances.filter(
-        (element) => !removedAppliances.includes(element)
-      );
-      // remove tags from ingredient list
-      let removeUtensilFromList = uniqueUtensils.filter(
-        (element) => !removedUtensils.includes(element)
-      );
-      // create appliance menu list
-      createElementListUtensil(removeUtensilFromList, appendElement, name);
-      // create ingredient menu list
-      createElementListIngredient(
-        removeIngredientFromList,
-        ingredientsMenu,
-        "ingredient-item"
-      );
-      createElementListAppliance(
-        removeApplianceFromList,
-        appliancesMenu,
-        "appliance-item"
-      );
-
-      // assign new recipes array (filtered)
-      currentRecipesData = newData;
-      // remove input value
-      searchUtensilsInput.value = "";
-      // close menu list
-      closeMenuFilters();
-    });
-  });
-};
 // function to remove recipes card and menu lists
 const removePage = () => {
   recipeWrapper.innerHTML = "";
@@ -336,17 +204,24 @@ const generatePage = (recipes) => {
   getRecipesCard(recipes);
   const { uniqueIngredients, uniqueApplicances, uniqueUtensils } =
     getFilters(recipes);
-  createElementListIngredient(
+  createElementList(
     uniqueIngredients,
     ingredientsMenu,
-    "ingredient-item"
+    "ingredient-item",
+    removedIngredients
   );
-  createElementListAppliance(
+  createElementList(
     uniqueApplicances,
     appliancesMenu,
-    "appliance-item"
+    "appliance-item",
+    removedAppliances
   );
-  createElementListUtensil(uniqueUtensils, utensilsMenu, "utensil-item");
+  createElementList(
+    uniqueUtensils,
+    utensilsMenu,
+    "utensil-item",
+    removedUtensils
+  );
 };
 
 const closeMenuFilters = () => {
@@ -358,14 +233,27 @@ const closeMenuFilters = () => {
   utensilForm.classList.add("remove");
 };
 
-const removeTag = (tag) => {
+const removeTag = (tag, name) => {
   tag.querySelector("i").addEventListener("click", () => {
-    let putBackElement = removedIngredients.filter(
-      (item) => !tag.querySelector("p").innerHTML.includes(item)
-    );
-    tag.remove();
-    removedIngredients = putBackElement;
+    let putBackElement;
+    if (name == "ingredient-item") {
+      putBackElement = removedIngredients.filter(
+        (item) => !tag.querySelector("p").innerHTML.includes(item)
+      );
+      removedIngredients = putBackElement;
+    } else if (name == "appliance-item") {
+      putBackElement = removedAppliances.filter(
+        (item) => !tag.querySelector("p").innerHTML.includes(item)
+      );
+      removedAppliances = putBackElement;
+    } else if (name == "utensil-item") {
+      putBackElement = removedUtensils.filter(
+        (item) => !tag.querySelector("p").innerHTML.includes(item)
+      );
+      removedUtensils = putBackElement;
+    }
 
+    tag.remove();
     let newArrayData;
     filteredDataSB
       ? (newArrayData = filteredDataSB)
@@ -392,124 +280,23 @@ const removeTag = (tag) => {
       (element) => !removedUtensils.includes(element)
     );
     // create ingredient menu list
-    createElementListIngredient(
+    createElementList(
       removeIngredientFromList,
       ingredientsMenu,
-      "ingredient-item"
+      "ingredient-item",
+      removedIngredients
     );
-    createElementListAppliance(
+    createElementList(
       removeApplianceFromList,
       appliancesMenu,
-      "appliance-item"
+      "appliance-item",
+      removedAppliances
     );
-    createElementListUtensil(
+    createElementList(
       removeUtensilFromList,
       utensilsMenu,
-      "utensil-item"
-    );
-  });
-};
-
-const removeTagAppliance = (tag) => {
-  tag.querySelector("i").addEventListener("click", () => {
-    let putBackElement = removedAppliances.filter(
-      (item) => !tag.querySelector("p").innerHTML.includes(item)
-    );
-    tag.remove();
-    removedAppliances = putBackElement;
-
-    let newArrayData;
-    filteredDataSB
-      ? (newArrayData = filteredDataSB)
-      : (newArrayData = recipesArray);
-
-    currentRecipesData = recipesArrayFilter(newArrayData);
-    // create page elements
-    removePage();
-    // generate single ingredient array
-    getRecipesCard(currentRecipesData);
-
-    const { uniqueIngredients, uniqueApplicances, uniqueUtensils } =
-      getFilters(currentRecipesData);
-    // remove tags from ingredient list
-    let removeIngredientFromList = uniqueIngredients.filter(
-      (element) => !removedIngredients.includes(element)
-    );
-    // remove tags from ingredient list
-    let removeApplianceFromList = uniqueApplicances.filter(
-      (element) => !removedAppliances.includes(element)
-    );
-    // remove tags from ingredient list
-    let removeUtensilFromList = uniqueUtensils.filter(
-      (element) => !removedUtensils.includes(element)
-    );
-    // create ingredient menu list
-    createElementListIngredient(
-      removeIngredientFromList,
-      ingredientsMenu,
-      "ingredient-item"
-    );
-    createElementListAppliance(
-      removeApplianceFromList,
-      appliancesMenu,
-      "appliance-item"
-    );
-    createElementListUtensil(
-      removeUtensilFromList,
-      utensilsMenu,
-      "utensil-item"
-    );
-  });
-};
-
-const removeTagUtensil = (tag) => {
-  tag.querySelector("i").addEventListener("click", () => {
-    let putBackElement = removedUtensils.filter(
-      (item) => !tag.querySelector("p").innerHTML.includes(item)
-    );
-    tag.remove();
-    removedUtensils = putBackElement;
-
-    let newArrayData;
-    filteredDataSB
-      ? (newArrayData = filteredDataSB)
-      : (newArrayData = recipesArray);
-
-    currentRecipesData = recipesArrayFilter(newArrayData);
-    // create page elements
-    removePage();
-    // generate single ingredient array
-    getRecipesCard(currentRecipesData);
-
-    const { uniqueIngredients, uniqueApplicances, uniqueUtensils } =
-      getFilters(currentRecipesData);
-    // remove tags from ingredient list
-    let removeIngredientFromList = uniqueIngredients.filter(
-      (element) => !removedIngredients.includes(element)
-    );
-    // remove tags from ingredient list
-    let removeApplianceFromList = uniqueApplicances.filter(
-      (element) => !removedAppliances.includes(element)
-    );
-    // remove tags from ingredient list
-    let removeUtensilFromList = uniqueUtensils.filter(
-      (element) => !removedUtensils.includes(element)
-    );
-    // create ingredient menu list
-    createElementListIngredient(
-      removeIngredientFromList,
-      ingredientsMenu,
-      "ingredient-item"
-    );
-    createElementListAppliance(
-      removeApplianceFromList,
-      appliancesMenu,
-      "appliance-item"
-    );
-    createElementListUtensil(
-      removeUtensilFromList,
-      utensilsMenu,
-      "utensil-item"
+      "utensil-item",
+      removedUtensils
     );
   });
 };
@@ -591,16 +378,18 @@ const init = () => {
       let remainIngredients = filteredIngredients.filter(
         (element) => !removedIngredients.includes(element)
       );
-      createElementListIngredient(
+      createElementList(
         remainIngredients,
         ingredientsMenu,
-        "ingredient-item"
+        "ingredient-item",
+        removedIngredients
       );
     } else {
-      createElementListIngredient(
+      createElementList(
         filteredIngredients,
         ingredientsMenu,
-        "ingredient-item"
+        "ingredient-item",
+        removedIngredients
       );
     }
   });
@@ -617,16 +406,18 @@ const init = () => {
       let remainAppliance = filteredAppliances.filter(
         (element) => !removedAppliances.includes(element)
       );
-      createElementListAppliance(
+      createElementList(
         remainAppliance,
         appliancesMenu,
-        "appliance-item"
+        "appliance-item",
+        removedAppliances
       );
     } else {
-      createElementListAppliance(
+      createElementList(
         filteredAppliances,
         appliancesMenu,
-        "appliance-item"
+        "appliance-item",
+        removedAppliances
       );
     }
   });
@@ -646,9 +437,19 @@ const init = () => {
         (element) => !removedUtensils.includes(element)
       );
 
-      createElementListUtensil(remainUtensil, utensilsMenu, "utensil-item");
+      createElementList(
+        remainUtensil,
+        utensilsMenu,
+        "utensil-item",
+        removedUtensils
+      );
     } else {
-      createElementListUtensil(filteredUtensils, utensilsMenu, "utensil-item");
+      createElementList(
+        filteredUtensils,
+        utensilsMenu,
+        "utensil-item",
+        removedUtensils
+      );
     }
   });
 };
