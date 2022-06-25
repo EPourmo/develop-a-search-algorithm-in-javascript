@@ -10,6 +10,10 @@ const serachBarInput = document.querySelector(".search_nav-input");
 const searchIngredientsInput = document.querySelector(
   ".search_ingredients-input"
 );
+const searchAppliancesInput = document.querySelector(
+  ".search_appliances-input"
+);
+const searchUtensilsInput = document.querySelector(".search_utensils-input");
 const tagContainer = document.querySelector(".tag-container");
 
 // function to display card
@@ -87,9 +91,12 @@ eventListenerFiltersMenu(utensilBtn, utensilForm, angleUpCloseUtensils);
 let filteredDataSB;
 let currentRecipesData = recipesArray;
 let removedIngredients = [];
+let removedAppliances = [];
+let removedUtensils = [];
 
 // function to generate menu from filters
 const createFilterList = (array, appendElement, name) => {
+  appendElement.innerHTML = "";
   array.forEach((item) => {
     const listElement = document.createElement("li");
     listElement.setAttribute("class", `list-element ${name}`);
@@ -98,27 +105,27 @@ const createFilterList = (array, appendElement, name) => {
   });
 };
 
-const createIngredientList = (array, appendElement, name) => {
-  ingredientsMenu.innerHTML = "";
-  // create ingredients list item
+const createElementListIngredient = (array, appendElement, name) => {
+  appendElement.innerHTML = "";
+  // create elements list item
   array.forEach((item) => {
-    const ingredient = document.createElement("li");
-    ingredient.setAttribute("class", `list-element ${name}`);
-    ingredient.textContent = item;
-    appendElement.appendChild(ingredient);
-    // event listener from each ingredient
-    ingredient.addEventListener("click", () => {
+    const arrayElement = document.createElement("li");
+    arrayElement.setAttribute("class", `list-element ${name}`);
+    arrayElement.textContent = item;
+    appendElement.appendChild(arrayElement);
+    // event listener from each array Element
+    arrayElement.addEventListener("click", () => {
       // get selected inner HTML ingredient from list
-      let tagValue = ingredient.innerHTML.toLocaleLowerCase();
-      removedIngredients.push(tagValue);
+      let tagValue = arrayElement.innerHTML.toLowerCase();
+
       // create tag
-      const tag = new Tags(tagValue, "ingredient");
+      const tag = new Tags(tagValue, name);
       const htmlTag = tag.createTag();
-      tagContainer.appendChild(htmlTag);
-      // function to remove tag
-      removeTag(htmlTag);
-      // create new recipes array data filtered
       let newData;
+      tagContainer.appendChild(htmlTag);
+
+      removedIngredients.push(tagValue);
+      // create new recipes array data filtered
       removedIngredients.forEach((element) => {
         newData = currentRecipesData.filter((recipe) => {
           return recipe.ingredients.some((ingre) =>
@@ -126,9 +133,12 @@ const createIngredientList = (array, appendElement, name) => {
           );
         });
       });
+
+      // function to remove tag
+      removeTag(htmlTag);
       // create page elements
       removePage();
-      // generate single ingredient array
+      // generate single elements array
       getRecipesCard(newData);
       const { uniqueIngredients, uniqueApplicances, uniqueUtensils } =
         getFilters(newData);
@@ -136,23 +146,183 @@ const createIngredientList = (array, appendElement, name) => {
       let removeIngredientFromList = uniqueIngredients.filter(
         (element) => !removedIngredients.includes(element)
       );
+      // remove tags from ingredient list
+      let removeApplianceFromList = uniqueApplicances.filter(
+        (element) => !removedAppliances.includes(element)
+      );
+      // remove tags from ingredient list
+      let removeUtensilFromList = uniqueUtensils.filter(
+        (element) => !removedUtensils.includes(element)
+      );
+
       // create ingredient menu list
-      createIngredientList(
+      createElementListIngredient(
         removeIngredientFromList,
-        ingredientsMenu,
-        "ingredient-item"
+        appendElement,
+        name
+      );
+      // create appliance menu list
+      createElementListAppliance(
+        removeApplianceFromList,
+        appliancesMenu,
+        "appliance-item"
+      );
+      createElementListUtensil(
+        removeUtensilFromList,
+        utensilsMenu,
+        "utensil-item"
       );
       // assign new recipes array (filtered)
       currentRecipesData = newData;
       // remove input value
       searchIngredientsInput.value = "";
       // close menu list
-      ingredientBtn.classList.remove("remove");
-      ingredientForm.classList.add("remove");
+      closeMenuFilters();
     });
   });
 };
 
+const createElementListAppliance = (array, appendElement, name) => {
+  appendElement.innerHTML = "";
+  // create elements list item
+  array.forEach((item) => {
+    const arrayElement = document.createElement("li");
+    arrayElement.setAttribute("class", `list-element ${name}`);
+    arrayElement.textContent = item;
+    appendElement.appendChild(arrayElement);
+    // event listener from each array Element
+    arrayElement.addEventListener("click", () => {
+      // get selected inner HTML ingredient from list
+      let tagValue = arrayElement.innerHTML.toLowerCase();
+      // create tag
+      const tag = new Tags(tagValue, name);
+      const htmlTag = tag.createTag();
+      let newData;
+      tagContainer.appendChild(htmlTag);
+
+      removedAppliances.push(tagValue);
+      // function to remove tag
+      removeTagAppliance(htmlTag);
+      // create new recipes array data filtered
+      removedAppliances.forEach((element) => {
+        newData = currentRecipesData.filter((recipe) => {
+          return recipe.appliance.toLowerCase().includes(element);
+        });
+      });
+
+      // create page elements
+      removePage();
+      // generate single elements array
+      getRecipesCard(newData);
+      const { uniqueIngredients, uniqueApplicances, uniqueUtensils } =
+        getFilters(newData);
+      // remove tags from ingredient list
+      let removeIngredientFromList = uniqueIngredients.filter(
+        (element) => !removedIngredients.includes(element)
+      );
+      // remove tags from ingredient list
+      let removeApplianceFromList = uniqueApplicances.filter(
+        (element) => !removedAppliances.includes(element)
+      );
+      // remove tags from ingredient list
+      let removeUtensilFromList = uniqueUtensils.filter(
+        (element) => !removedUtensils.includes(element)
+      );
+
+      // create appliance menu list
+      createElementListAppliance(removeApplianceFromList, appendElement, name);
+      // create ingredient menu list
+      createElementListIngredient(
+        removeIngredientFromList,
+        ingredientsMenu,
+        "ingredient-item"
+      );
+      createElementListUtensil(
+        removeUtensilFromList,
+        utensilsMenu,
+        "utensil-item"
+      );
+      // assign new recipes array (filtered)
+      currentRecipesData = newData;
+      // remove input value
+      searchAppliancesInput.value = "";
+      // close menu list
+      closeMenuFilters();
+    });
+  });
+};
+
+const createElementListUtensil = (array, appendElement, name) => {
+  appendElement.innerHTML = "";
+  // create elements list item
+  array.forEach((item) => {
+    const arrayElement = document.createElement("li");
+    arrayElement.setAttribute("class", `list-element ${name}`);
+    arrayElement.textContent = item;
+    appendElement.appendChild(arrayElement);
+    // event listener from each array Element
+    arrayElement.addEventListener("click", () => {
+      // get selected inner HTML ingredient from list
+      let tagValue = arrayElement.innerHTML.toLowerCase();
+      // create tag
+      const tag = new Tags(tagValue, name);
+      const htmlTag = tag.createTag();
+      let newData;
+      tagContainer.appendChild(htmlTag);
+
+      removedUtensils.push(tagValue);
+      // function to remove tag
+      removeTagUtensil(htmlTag);
+      // create new recipes array data filtered
+      removedUtensils.forEach((element) => {
+        newData = currentRecipesData.filter((recipe) => {
+          return recipe.ustensils.some(
+            (utensil) => utensil.toLowerCase() == element
+          );
+        });
+      });
+
+      // create page elements
+      removePage();
+      // generate single elements array
+      getRecipesCard(newData);
+      const { uniqueIngredients, uniqueApplicances, uniqueUtensils } =
+        getFilters(newData);
+      // remove tags from ingredient list
+      let removeIngredientFromList = uniqueIngredients.filter(
+        (element) => !removedIngredients.includes(element)
+      );
+      // remove tags from ingredient list
+      let removeApplianceFromList = uniqueApplicances.filter(
+        (element) => !removedAppliances.includes(element)
+      );
+      // remove tags from ingredient list
+      let removeUtensilFromList = uniqueUtensils.filter(
+        (element) => !removedUtensils.includes(element)
+      );
+      // create appliance menu list
+      createElementListUtensil(removeUtensilFromList, appendElement, name);
+      // create ingredient menu list
+      createElementListIngredient(
+        removeIngredientFromList,
+        ingredientsMenu,
+        "ingredient-item"
+      );
+      createElementListAppliance(
+        removeApplianceFromList,
+        appliancesMenu,
+        "appliance-item"
+      );
+
+      // assign new recipes array (filtered)
+      currentRecipesData = newData;
+      // remove input value
+      searchUtensilsInput.value = "";
+      // close menu list
+      closeMenuFilters();
+    });
+  });
+};
 // function to remove recipes card and menu lists
 const removePage = () => {
   recipeWrapper.innerHTML = "";
@@ -166,56 +336,222 @@ const generatePage = (recipes) => {
   getRecipesCard(recipes);
   const { uniqueIngredients, uniqueApplicances, uniqueUtensils } =
     getFilters(recipes);
-  createIngredientList(uniqueIngredients, ingredientsMenu, "ingredient-item");
-  createFilterList(uniqueApplicances, appliancesMenu, "appliance-item");
-  createFilterList(uniqueUtensils, utensilsMenu, "utensil-item");
+  createElementListIngredient(
+    uniqueIngredients,
+    ingredientsMenu,
+    "ingredient-item"
+  );
+  createElementListAppliance(
+    uniqueApplicances,
+    appliancesMenu,
+    "appliance-item"
+  );
+  createElementListUtensil(uniqueUtensils, utensilsMenu, "utensil-item");
+};
+
+const closeMenuFilters = () => {
+  ingredientBtn.classList.remove("remove");
+  ingredientForm.classList.add("remove");
+  applianceBtn.classList.remove("remove");
+  applianceForm.classList.add("remove");
+  utensilBtn.classList.remove("remove");
+  utensilForm.classList.add("remove");
 };
 
 const removeTag = (tag) => {
   tag.querySelector("i").addEventListener("click", () => {
-    let putBackIngredients = removedIngredients.filter(
+    let putBackElement = removedIngredients.filter(
       (item) => !tag.querySelector("p").innerHTML.includes(item)
     );
     tag.remove();
-    removedIngredients = putBackIngredients;
-    let newArrayData;
+    removedIngredients = putBackElement;
 
+    let newArrayData;
     filteredDataSB
       ? (newArrayData = filteredDataSB)
       : (newArrayData = recipesArray);
 
-    if (removedIngredients.length > 0) {
-      removedIngredients.forEach((element) => {
-        newArrayData = newArrayData.filter((recipe) => {
-          return recipe.ingredients.some((ingre) =>
-            ingre.ingredient.toLowerCase().includes(element)
-          );
-        });
-      });
-    } else {
-      filteredDataSB
-        ? (newArrayData = filteredDataSB)
-        : (newArrayData = recipesArray);
-    }
+    currentRecipesData = recipesArrayFilter(newArrayData);
     // create page elements
     removePage();
     // generate single ingredient array
-    getRecipesCard(newArrayData);
+    getRecipesCard(currentRecipesData);
 
     const { uniqueIngredients, uniqueApplicances, uniqueUtensils } =
-      getFilters(newArrayData);
+      getFilters(currentRecipesData);
     // remove tags from ingredient list
     let removeIngredientFromList = uniqueIngredients.filter(
       (element) => !removedIngredients.includes(element)
     );
+    // remove tags from ingredient list
+    let removeApplianceFromList = uniqueApplicances.filter(
+      (element) => !removedAppliances.includes(element)
+    );
+    // remove tags from ingredient list
+    let removeUtensilFromList = uniqueUtensils.filter(
+      (element) => !removedUtensils.includes(element)
+    );
     // create ingredient menu list
-    createIngredientList(
+    createElementListIngredient(
       removeIngredientFromList,
       ingredientsMenu,
       "ingredient-item"
     );
-    currentRecipesData = newArrayData;
+    createElementListAppliance(
+      removeApplianceFromList,
+      appliancesMenu,
+      "appliance-item"
+    );
+    createElementListUtensil(
+      removeUtensilFromList,
+      utensilsMenu,
+      "utensil-item"
+    );
   });
+};
+
+const removeTagAppliance = (tag) => {
+  tag.querySelector("i").addEventListener("click", () => {
+    let putBackElement = removedAppliances.filter(
+      (item) => !tag.querySelector("p").innerHTML.includes(item)
+    );
+    tag.remove();
+    removedAppliances = putBackElement;
+
+    let newArrayData;
+    filteredDataSB
+      ? (newArrayData = filteredDataSB)
+      : (newArrayData = recipesArray);
+
+    currentRecipesData = recipesArrayFilter(newArrayData);
+    // create page elements
+    removePage();
+    // generate single ingredient array
+    getRecipesCard(currentRecipesData);
+
+    const { uniqueIngredients, uniqueApplicances, uniqueUtensils } =
+      getFilters(currentRecipesData);
+    // remove tags from ingredient list
+    let removeIngredientFromList = uniqueIngredients.filter(
+      (element) => !removedIngredients.includes(element)
+    );
+    // remove tags from ingredient list
+    let removeApplianceFromList = uniqueApplicances.filter(
+      (element) => !removedAppliances.includes(element)
+    );
+    // remove tags from ingredient list
+    let removeUtensilFromList = uniqueUtensils.filter(
+      (element) => !removedUtensils.includes(element)
+    );
+    // create ingredient menu list
+    createElementListIngredient(
+      removeIngredientFromList,
+      ingredientsMenu,
+      "ingredient-item"
+    );
+    createElementListAppliance(
+      removeApplianceFromList,
+      appliancesMenu,
+      "appliance-item"
+    );
+    createElementListUtensil(
+      removeUtensilFromList,
+      utensilsMenu,
+      "utensil-item"
+    );
+  });
+};
+
+const removeTagUtensil = (tag) => {
+  tag.querySelector("i").addEventListener("click", () => {
+    let putBackElement = removedUtensils.filter(
+      (item) => !tag.querySelector("p").innerHTML.includes(item)
+    );
+    tag.remove();
+    removedUtensils = putBackElement;
+
+    let newArrayData;
+    filteredDataSB
+      ? (newArrayData = filteredDataSB)
+      : (newArrayData = recipesArray);
+
+    currentRecipesData = recipesArrayFilter(newArrayData);
+    // create page elements
+    removePage();
+    // generate single ingredient array
+    getRecipesCard(currentRecipesData);
+
+    const { uniqueIngredients, uniqueApplicances, uniqueUtensils } =
+      getFilters(currentRecipesData);
+    // remove tags from ingredient list
+    let removeIngredientFromList = uniqueIngredients.filter(
+      (element) => !removedIngredients.includes(element)
+    );
+    // remove tags from ingredient list
+    let removeApplianceFromList = uniqueApplicances.filter(
+      (element) => !removedAppliances.includes(element)
+    );
+    // remove tags from ingredient list
+    let removeUtensilFromList = uniqueUtensils.filter(
+      (element) => !removedUtensils.includes(element)
+    );
+    // create ingredient menu list
+    createElementListIngredient(
+      removeIngredientFromList,
+      ingredientsMenu,
+      "ingredient-item"
+    );
+    createElementListAppliance(
+      removeApplianceFromList,
+      appliancesMenu,
+      "appliance-item"
+    );
+    createElementListUtensil(
+      removeUtensilFromList,
+      utensilsMenu,
+      "utensil-item"
+    );
+  });
+};
+
+const recipesArrayFilter = (array) => {
+  if (
+    removedIngredients.length == 0 &&
+    removedAppliances.length == 0 &&
+    removedUtensils.length == 0
+  ) {
+    return array;
+  }
+
+  if (removedIngredients.length > 0) {
+    removedIngredients.forEach((element) => {
+      array = array.filter((recipe) => {
+        return recipe.ingredients.some((ingre) =>
+          ingre.ingredient.toLowerCase().includes(element)
+        );
+      });
+    });
+  }
+
+  if (removedAppliances.length > 0) {
+    removedAppliances.forEach((element) => {
+      array = array.filter((recipe) => {
+        return recipe.appliance.toLowerCase().includes(element);
+      });
+    });
+  }
+
+  if (removedUtensils.length > 0) {
+    removedUtensils.forEach((element) => {
+      array = array.filter((recipe) => {
+        return recipe.ustensils.some((utensil) =>
+          utensil.toLowerCase().includes(element)
+        );
+      });
+    });
+  }
+
+  return array;
 };
 
 const init = () => {
@@ -236,6 +572,11 @@ const init = () => {
       generatePage(filteredDataSB);
       currentRecipesData = filteredDataSB;
     }
+
+    removedIngredients = [];
+    removedAppliances = [];
+    removedUtensils = [];
+    tagContainer.innerHTML = "";
   });
 
   searchIngredientsInput.addEventListener("input", (e) => {
@@ -250,19 +591,64 @@ const init = () => {
       let remainIngredients = filteredIngredients.filter(
         (element) => !removedIngredients.includes(element)
       );
-      ingredientsMenu.innerHTML = "";
-      createIngredientList(
+      createElementListIngredient(
         remainIngredients,
         ingredientsMenu,
         "ingredient-item"
       );
     } else {
-      ingredientsMenu.innerHTML = "";
-      createIngredientList(
+      createElementListIngredient(
         filteredIngredients,
         ingredientsMenu,
         "ingredient-item"
       );
+    }
+  });
+
+  searchAppliancesInput.addEventListener("input", (e) => {
+    let inputValue = e.target.value.toLowerCase();
+    // display filtered data on ingredient search form
+    const { uniqueIngredients, uniqueApplicances, uniqueUtensils } =
+      getFilters(currentRecipesData);
+    let filteredAppliances = uniqueApplicances.filter((appliance) => {
+      return appliance.includes(inputValue);
+    });
+    if (removedAppliances.length > 0) {
+      let remainAppliance = filteredAppliances.filter(
+        (element) => !removedAppliances.includes(element)
+      );
+      createElementListAppliance(
+        remainAppliance,
+        appliancesMenu,
+        "appliance-item"
+      );
+    } else {
+      createElementListAppliance(
+        filteredAppliances,
+        appliancesMenu,
+        "appliance-item"
+      );
+    }
+  });
+
+  searchUtensilsInput.addEventListener("input", (e) => {
+    let inputValue = e.target.value.toLowerCase();
+
+    // display filtered data on ingredient search form
+    const { uniqueIngredients, uniqueApplicances, uniqueUtensils } =
+      getFilters(currentRecipesData);
+    let filteredUtensils = uniqueUtensils.filter((utensil) => {
+      return utensil.includes(inputValue);
+    });
+
+    if (removedUtensils.length > 0) {
+      let remainUtensil = filteredUtensils.filter(
+        (element) => !removedUtensils.includes(element)
+      );
+
+      createElementListUtensil(remainUtensil, utensilsMenu, "utensil-item");
+    } else {
+      createElementListUtensil(filteredUtensils, utensilsMenu, "utensil-item");
     }
   });
 };
