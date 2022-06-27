@@ -1,5 +1,5 @@
 /**
- * Class to filter main search data
+ * Class to filter main search data (native)
  */
 export default class FilterSearchBar {
   /**
