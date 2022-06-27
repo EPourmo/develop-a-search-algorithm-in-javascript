@@ -1,11 +1,34 @@
+/**
+ * Class to create recipes card
+ */
 export default class RecipeCard {
+  /**
+   *
+   * @param {Array} data recipes array
+   */
   constructor(data) {
+    /**
+     * @property {String} name recipe's name
+     */
     this._name = data.name;
+    /**
+     * @property {Array} ingredients list of ingredients
+     */
     this._ingredients = data.ingredients;
+    /**
+     * @property {number} time recipe's time
+     */
     this._time = data.time;
+    /**
+     * @property {String} description recipe's direction
+     */
     this._description = data.description;
   }
 
+  /**
+   * @property {Function} createRecipeCard create recipe card
+   * @returns {Object}
+   */
   createRecipeCard() {
     const recipeCard = document.createElement("div");
     recipeCard.classList.add("recipe_card");

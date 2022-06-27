@@ -1,13 +1,26 @@
+/**
+ * Class to create unique arrays of element: ingredients and utensils
+ */
 export default class Filters {
+  /**
+   *
+   * @param {Array} data recipes
+   */
   constructor(data) {
-    this._name = data.name;
+    /**
+     * @property {Array} ingredients list of ingredients
+     */
     this._ingredients = data.ingredients;
-    this._time = data.time;
-    this._description = data.description;
-    this._appliance = data.appliance;
+    /**
+     * @property {Array} ustensils list of ustensils
+     */
     this._ustensils = data.ustensils;
   }
 
+  /**
+   * @property {Function} displayIngredientsList create an unique array with ingredients
+   * @returns {Array} new array ingredients
+   */
   displayIngredientsList() {
     let ingredientsArray = [];
     this._ingredients.forEach((element) => {
@@ -17,6 +30,10 @@ export default class Filters {
     return ingredientsArray;
   }
 
+  /**
+   * @property {Function} displayUtensilsList create an unique array with utensils
+   * @returns {Array} new array utensils
+   */
   displayUtensilsList() {
     let utensilsArray = [];
     this._ustensils.forEach((element) => {

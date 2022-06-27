@@ -1,3 +1,7 @@
+/**
+ * recipes Array with complete data
+ * @type {Array<object>}
+ */
 const recipes = [
   {
     id: 1,
