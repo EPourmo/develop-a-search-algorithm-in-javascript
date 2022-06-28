@@ -18,15 +18,26 @@ export default class FilterSearchBar {
    */
   mainFilterRecipes() {
     if (this._input.length > 2) {
-      const filteredRecipes = this._recipes.filter((recipe) => {
-        return (
-          recipe.name.toLowerCase().includes(this._input) ||
-          recipe.description.toLowerCase().includes(this._input) ||
-          recipe.ingredients.some((element) =>
+      let filteredRecipes = [];
+      for (let i = 0; i < this._recipes.length; i++) {
+        if (this._recipes[i].name.toLowerCase().includes(this._input)) {
+          console.log(this._recipes[i]);
+          filteredRecipes.push(this._recipes[i]);
+        }
+
+        if (this._recipes[i].description.toLowerCase().includes(this._input)) {
+          filteredRecipes.push(this._recipes[i]);
+        }
+
+        if (
+          this._recipes[i].ingredients.some((element) =>
             element.ingredient.toLowerCase().includes(this._input)
           )
-        );
-      });
+        ) {
+          filteredRecipes.push(this._recipes[i]);
+        }
+      }
+
       return filteredRecipes;
     } else {
       return this._recipes;
