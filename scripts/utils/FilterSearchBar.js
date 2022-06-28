@@ -18,15 +18,14 @@ export default class FilterSearchBar {
    */
   mainFilterRecipes() {
     if (this._input.length > 2) {
-      let filteredRecipes = [];
+      let filteredData = [];
       for (let i = 0; i < this._recipes.length; i++) {
         if (this._recipes[i].name.toLowerCase().includes(this._input)) {
-          console.log(this._recipes[i]);
-          filteredRecipes.push(this._recipes[i]);
+          filteredData.push(this._recipes[i]);
         }
 
         if (this._recipes[i].description.toLowerCase().includes(this._input)) {
-          filteredRecipes.push(this._recipes[i]);
+          filteredData.push(this._recipes[i]);
         }
 
         if (
@@ -34,10 +33,19 @@ export default class FilterSearchBar {
             element.ingredient.toLowerCase().includes(this._input)
           )
         ) {
-          filteredRecipes.push(this._recipes[i]);
+          filteredData.push(this._recipes[i]);
         }
       }
 
+      let seen = {};
+      let filteredRecipes = [];
+
+      for (let i = 0; i < filteredData.length; i++) {
+        if (!(filteredData[i].id in seen)) {
+          filteredRecipes.push(filteredData[i]);
+          seen[filteredData[i].id] = true;
+        }
+      }
       return filteredRecipes;
     } else {
       return this._recipes;
