@@ -52,6 +52,10 @@ header {
   line-height: 22px;
 }
 
+.search_nav-form {
+  width: 100%;
+}
+
 .search_nav-input::placeholder {
   font-style: normal;
   font-weight: 400;
@@ -244,8 +248,9 @@ button.filter-btn {
 
 .recipe_card {
   height: 380px;
-  width: 364px;
+  width: 30%;
   display: flex;
+  margin-bottom: 50px;
   flex-direction: column;
   background: #c7bebe;
   border-radius: 5px;
@@ -335,11 +340,11 @@ button.filter-btn {
 }
 
 .recipes .recipes-wrapper {
+  width: 100%;
   padding-top: 152px;
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
-  gap: 50px;
 }
 
 @keyframes appear {
