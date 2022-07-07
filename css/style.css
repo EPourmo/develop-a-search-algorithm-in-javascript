@@ -248,9 +248,9 @@ button.filter-btn {
 
 .recipe_card {
   height: 380px;
-  width: 30%;
+  width: 100%;
   display: flex;
-  margin-bottom: 50px;
+  justify-self: center;
   flex-direction: column;
   background: #c7bebe;
   border-radius: 5px;
@@ -342,9 +342,10 @@ button.filter-btn {
 .recipes .recipes-wrapper {
   width: 100%;
   padding-top: 152px;
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  row-gap: 50px;
+  column-gap: 50px;
 }
 
 @keyframes appear {
@@ -418,5 +419,39 @@ button.filter-btn {
   100% {
     opacity: 1;
     transform: rotate(360deg);
+  }
+}
+
+/* --------Media queries---------- */
+@media (max-width: 1150px) {
+  .recipes .recipes-wrapper {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .recipe_card {
+    max-width: 380px;
+  }
+}
+
+@media (max-width: 720px) {
+  .recipes .recipes-wrapper {
+    grid-template-columns: 1fr;
+  }
+
+  .ingredients-menu,
+  .appliances-menu,
+  .utensils-menu {
+    column-count: 1;
+  }
+
+  .ingredients-form-container,
+  .appliances-form-container,
+  .utensils-form-container {
+    max-width: 250px;
+  }
+
+  .search_ingredients-input,
+  .search_appliances-input,
+  .search_utensils-input {
+    max-width: 200px;
   }
 }
