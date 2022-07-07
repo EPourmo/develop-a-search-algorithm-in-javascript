@@ -17,7 +17,9 @@ export default class FilterSearchBar {
    * @returns {Array} filtered data
    */
   mainFilterRecipes() {
+    const recipesSection = document.querySelector(".recipes");
     if (this._input.length > 2) {
+      recipesSection.classList.add("anime");
       const filteredRecipes = this._recipes.filter((recipe) => {
         return (
           recipe.name.toLowerCase().includes(this._input) ||
@@ -29,6 +31,7 @@ export default class FilterSearchBar {
       });
       return filteredRecipes;
     } else {
+      recipesSection.classList.remove("anime");
       return this._recipes;
     }
   }
