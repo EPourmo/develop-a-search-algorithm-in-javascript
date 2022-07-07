@@ -363,6 +363,7 @@ button.filter-btn {
 .no-fund-message {
   margin: 0;
   font-weight: 700;
+  grid-column: 1 / 3;
 }
 
 /*--------Tags Card--------*/
