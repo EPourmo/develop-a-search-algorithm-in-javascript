@@ -248,7 +248,7 @@ button.filter-btn {
 
 .recipe_card {
   height: 380px;
-  width: 30%;
+  width: 100%;
   display: flex;
   margin-bottom: 50px;
   flex-direction: column;
@@ -342,9 +342,11 @@ button.filter-btn {
 .recipes .recipes-wrapper {
   width: 100%;
   padding-top: 152px;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  /* flex-wrap: wrap;
+  justify-content: space-between; */
 }
 
 @keyframes appear {
