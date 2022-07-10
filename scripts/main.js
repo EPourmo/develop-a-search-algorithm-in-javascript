@@ -372,7 +372,7 @@ const removeElementFromMenuList = (ingredient, appliance, utensil) => {
  * @param {Object} htmlMenu
  * @param {String} inputName
  */
-const inputEvenListener = (htmlInput, removedArray, htmlMenu, inputName) => {
+const inputEvenListener = (htmlInput, htmlMenu, inputName) => {
   // event listener on input html
   htmlInput.addEventListener("input", (e) => {
     let inputValue = e.target.value.toLowerCase();
@@ -384,23 +384,66 @@ const inputEvenListener = (htmlInput, removedArray, htmlMenu, inputName) => {
       filteredElement = uniqueIngredients.filter((ingredient) => {
         return ingredient.includes(inputValue);
       });
+      // filter elements regarding input value and create list menu
+      if (removedIngredients.length > 0) {
+        let remainElement = filteredElement.filter(
+          (element) => !removedIngredients.includes(element)
+        );
+        createElementList(
+          remainElement,
+          htmlMenu,
+          inputName,
+          removedIngredients
+        );
+      } else {
+        createElementList(
+          filteredElement,
+          htmlMenu,
+          inputName,
+          removedIngredients
+        );
+      }
     } else if (inputName == "appliance-item") {
       filteredElement = uniqueApplicances.filter((appliance) => {
         return appliance.includes(inputValue);
       });
+      // filter elements regarding input value and create list menu
+      if (removedAppliances.length > 0) {
+        let remainElement = filteredElement.filter(
+          (element) => !removedAppliances.includes(element)
+        );
+        createElementList(
+          remainElement,
+          htmlMenu,
+          inputName,
+          removedAppliances
+        );
+      } else {
+        createElementList(
+          filteredElement,
+          htmlMenu,
+          inputName,
+          removedAppliances
+        );
+      }
     } else if (inputName == "utensil-item") {
       filteredElement = uniqueUtensils.filter((utensil) => {
         return utensil.includes(inputValue);
       });
-    }
-    // filter elements regarding input value and create list menu
-    if (removedArray.length > 0) {
-      let remainElement = filteredElement.filter(
-        (element) => !removedArray.includes(element)
-      );
-      createElementList(remainElement, htmlMenu, inputName, removedArray);
-    } else {
-      createElementList(filteredElement, htmlMenu, inputName, removedArray);
+      // filter elements regarding input value and create list menu
+      if (removedUtensils.length > 0) {
+        let remainElement = filteredElement.filter(
+          (element) => !removedUtensils.includes(element)
+        );
+        createElementList(remainElement, htmlMenu, inputName, removedUtensils);
+      } else {
+        createElementList(
+          filteredElement,
+          htmlMenu,
+          inputName,
+          removedUtensils
+        );
+      }
     }
   });
 };
@@ -426,8 +469,8 @@ const init = () => {
       tarte aux pommes », « poisson », etc.
     </p>`;
     } else {
-      generatePage(filteredDataSearchBar);
       currentRecipesData = filteredDataSearchBar;
+      generatePage(filteredDataSearchBar);
     }
     // remove tag if event on search bar
     removedIngredients = [];
@@ -436,24 +479,10 @@ const init = () => {
     tagContainer.innerHTML = "";
   });
   // Event listener on input
-  inputEvenListener(
-    searchIngredientsInput,
-    removedIngredients,
-    ingredientsMenu,
-    "ingredient-item"
-  );
-  inputEvenListener(
-    searchAppliancesInput,
-    removedAppliances,
-    appliancesMenu,
-    "appliance-item"
-  );
-  inputEvenListener(
-    searchUtensilsInput,
-    removedUtensils,
-    utensilsMenu,
-    "utensil-item"
-  );
+
+  inputEvenListener(searchIngredientsInput, ingredientsMenu, "ingredient-item");
+  inputEvenListener(searchAppliancesInput, appliancesMenu, "appliance-item");
+  inputEvenListener(searchUtensilsInput, utensilsMenu, "utensil-item");
 };
 
 init();
